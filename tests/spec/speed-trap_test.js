@@ -1,42 +1,42 @@
 /* This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
-(function() {
-  "use strict";
+(function () {
+  /*global SpeedTrap, chai, describe, beforeEach, it*/
+  'use strict';
 
   var assert = chai.assert;
-  var SpeedTrap = window.SpeedTrap;
 
-  describe('Speed Trap', function() {
+  describe('Speed Trap', function () {
     var speedTrap;
 
-    beforeEach(function() {
+    beforeEach(function () {
       speedTrap = Object.create(SpeedTrap);
       speedTrap.init({});
       speedTrap.stored.clear();
     });
 
-    it('exists', function() {
+    it('exists', function () {
       assert.isObject(window.SpeedTrap);
     });
 
-    it('all data can be retreived', function() {
+    it('all data can be retreived', function () {
       var data = speedTrap.get();
       assert.isObject(data.navigationTiming);
       assert.isObject(data.timers);
       assert.isArray(data.events);
     });
 
-    describe('navigationTiming', function() {
-      it('is captured', function() {
+    describe('navigationTiming', function () {
+      it('is captured', function () {
         assert.ok('loadEventEnd' in speedTrap.navigationTiming.get());
       });
     });
 
-    describe('timers', function() {
-      it('can be captured', function(done) {
+    describe('timers', function () {
+      it('can be captured', function (done) {
         speedTrap.timers.start('named_timer');
-        setTimeout(function() {
+        setTimeout(function () {
           speedTrap.timers.stop('named_timer');
           var timers = speedTrap.timers.get('named_timer');
           assert.isArray(timers);
@@ -46,8 +46,8 @@
       });
     });
 
-    describe('events', function() {
-      it('can be captured', function() {
+    describe('events', function () {
+      it('can be captured', function () {
         speedTrap.events.capture('event');
         var events = speedTrap.events.get();
         assert.isArray(events);
@@ -56,8 +56,8 @@
       });
     });
 
-    describe('stored', function() {
-      it('current session can be stored', function() {
+    describe('stored', function () {
+      it('current session can be stored', function () {
         speedTrap.store();
         var sessions = speedTrap.stored.get();
         assert.isArray(sessions);
@@ -69,7 +69,7 @@
 
       });
 
-      it('a session is only stored once', function() {
+      it('a session is only stored once', function () {
         speedTrap.store();
         speedTrap.store();
         var sessions = speedTrap.stored.get();

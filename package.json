@@ -1,0 +1,29 @@
+{
+  "name": "speed-trap",
+  "version": "0.0.0",
+  "description": "Capture RUM - timers, events, navigation timing, resource timing.",
+  "main": "Gruntfile.js",
+  "directories": {
+    "test": "tests"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git://github.com/shane-tomlinson/speed-trap.git"
+  },
+  "author": "Shane Tomlinson <shane@shanetomlinson.com>",
+  "license": "MPL 2.0",
+  "bugs": {
+    "url": "https://github.com/shane-tomlinson/speed-trap/issues"
+  },
+  "devDependencies": {
+    "grunt-contrib-jshint": "~0.7.2",
+    "jshint": "~2.3.0",
+    "grunt": "~0.4.2",
+    "grunt-contrib-uglify": "~0.2.7",
+    "jshint-stylish": "~0.1.4",
+    "grunt-mocha": "~0.4.7",
+    "time-grunt": "~0.2.5",
+    "load-grunt-tasks": "~0.2.1",
+    "phantomjs": "~1.9.2-5"
+  }
+}

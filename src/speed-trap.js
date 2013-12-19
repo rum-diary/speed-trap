@@ -74,7 +74,7 @@
       this.navigationTiming = options.navigationTiming || navigationTiming;
     },
 
-    get: function() {
+    get: function () {
       return this.navigationTiming;
     }
   };
@@ -95,9 +95,9 @@
     stop: function (name) {
       var stop = now();
 
-      if ( ! this.running[name]) throw new Error(name + ' timer not started');
+      if (! this.running[name]) throw new Error(name + ' timer not started');
 
-      if ( ! this.completed[name]) this.completed[name] = [];
+      if (! this.completed[name]) this.completed[name] = [];
       var start = this.running[name];
 
       this.completed[name].push({
@@ -111,7 +111,7 @@
     },
 
     get: function (name) {
-      if ( ! name) return this.completed;
+      if (! name) return this.completed;
       return this.completed[name];
     }
   };
@@ -172,8 +172,9 @@
 
   function guid() {
     // from http://stackoverflow.com/questions/105034/how-to-create-a-guid-uuid-in-javascript
-    return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function(c) {
-      var r = Math.random()*16|0, v = c == 'x' ? r : (r&0x3|0x8);
+    return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function (c) {
+      /*jshint bitwise: false*/
+      var r = Math.random() * 16|0, v = c === 'x' ? r : (r&0x3|0x8);
       return v.toString(16);
     });
   }
