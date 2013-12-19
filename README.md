@@ -12,7 +12,7 @@ Capture RUM - timers, events, navigation timing, resource timing.
 * http://github.com/stomlinson
 * @shane_tomlinson
 
-## Getting involved:
+## Get involved:
 
 Any and all pull requests will be reviewed and considered.
 
