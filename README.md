@@ -9,7 +9,6 @@ Capture RUM - timers, events, navigation timing, resource timing.
 * set117@yahoo.com
 * https://shanetomlinson.com
 * http://github.com/shane-tomlinson
-* http://github.com/stomlinson
 * @shane_tomlinson
 
 ## Get involved:
@@ -28,7 +27,4 @@ Specific needs:
 This software is available under version 2.0 of the MPL:
 
   https://www.mozilla.org/MPL/
-
-
-
 

@@ -25,6 +25,7 @@
       assert.isObject(data.navigationTiming);
       assert.isObject(data.timers);
       assert.isArray(data.events);
+      assert.isTrue('referrer' in data);
     });
 
     describe('navigationTiming', function () {

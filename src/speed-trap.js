@@ -28,7 +28,8 @@
         uuid: this.uuid,
         navigationTiming: this.navigationTiming.get(),
         timers: this.timers.get(),
-        events: this.events.get()
+        events: this.events.get(),
+        referrer: document.referrer || ''
       };
     },
 
