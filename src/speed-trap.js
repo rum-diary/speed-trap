@@ -2,10 +2,11 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
-(function (exports, undefined) {
+/* jshint ignore:start */
+(function(define){
+/* jshint ignore:end */
+define(function (require, exports, module, undefined) {
   'use strict';
-
-  var LOCAL_STORAGE_NAMESPACE = '__speed_trap__';
 
   var SpeedTrap = {
     init: function (options) {
@@ -13,28 +14,65 @@
       this.navigationTiming = create(NavigationTiming);
       this.navigationTiming.init(options);
 
+      this.baseTime = this.navigationTiming.get().navigationStart || now();
+
       this.timers = create(Timers);
-      this.timers.init();
+      this.timers.init({
+        baseTime: this.baseTime
+      });
 
       this.events = create(Events);
-      this.events.init();
+      this.events.init({
+        baseTime: this.baseTime
+      });
 
-      this.stored = create(PersistentStorage);
       this.uuid = guid();
+
+      this.tags = options.tags || [];
+
+      // store a bit with the site being tracked to avoid sending cookies to
+      // rum-diary.org. This bit keeps track whether the user has visited
+      // this site before. Since localStorage is scoped to a particular
+      // domain, it is not shared with other sites.
+      this.returning = !!localStorage.getItem('_st');
+      localStorage.setItem('_st', '1');
     },
 
-    get: function () {
+    /**
+     * Data to send on page load.
+     */
+    getLoad: function () {
+      // puuid is saved for users who visit another page on the same
+      // site. The current page will be updated to set its is_exit flag
+      // to false as well as update which page the user goes to next.
+      var previousPageUUID = sessionStorage.getItem('_puuid');
+      sessionStorage.removeItem('_puuid');
+
       return {
         uuid: this.uuid,
-        navigationTiming: this.navigationTiming.get(),
-        timers: this.timers.get(),
-        events: this.events.get(),
-        referrer: document.referrer || ''
+        puuid: previousPageUUID,
+        navigationTiming: this.navigationTiming.diff(),
+        referrer: document.referrer || '',
+        tags: this.tags,
+        returning: this.returning
       };
     },
 
-    store: function () {
-      this.stored.store(this.get());
+    /**
+     * Data to send on page unload
+     */
+    getUnload: function () {
+      // puuid is saved for users who visit another page on the same
+      // site. The current page will be updated to set its is_exit flag
+      // to false as well as update which page the user goes to next.
+      sessionStorage.setItem('_puuid', this.uuid);
+
+      return {
+        uuid: this.uuid,
+        duration: now() - this.baseTime,
+        timers: this.timers.get(),
+        events: this.events.get()
+      };
     }
   };
 
@@ -73,17 +111,34 @@
     init: function (options) {
       options = options || {};
       this.navigationTiming = options.navigationTiming || navigationTiming;
+
+      // if navigationStart is not available (no browser support), use now
+      // as the basetime.
+      this.baseTime = this.navigationTiming.navigationStart || now();
     },
 
     get: function () {
       return this.navigationTiming;
+    },
+
+    diff: function() {
+      var diff = {};
+      var baseTime = this.baseTime;
+      for (var key in NAVIGATION_TIMING_FIELDS) {
+        if ( ! this.navigationTiming[key])
+          diff[key] = null;
+        else
+          diff[key] = this.navigationTiming[key] - baseTime;
+      }
+      return diff;
     }
   };
 
   var Timers = {
-    init: function () {
+    init: function (options) {
       this.completed = {};
       this.running = {};
+      this.baseTime = options.baseTime;
     },
 
     start: function (name) {
@@ -102,8 +157,8 @@
       var start = this.running[name];
 
       this.completed[name].push({
-        start: start,
-        stop: stop,
+        start: start - this.baseTime,
+        stop: stop - this.baseTime,
         elapsed: stop - start
       });
 
@@ -118,44 +173,20 @@
   };
 
   var Events = {
-    init: function () {
+    init: function (options) {
       this.events = [];
+      this.baseTime = options.baseTime;
     },
 
     capture: function (name) {
       this.events.push({
         type: name,
-        timestamp: now()
+        offset: now() - this.baseTime
       });
     },
 
     get: function () {
       return this.events;
-    }
-  };
-
-  var PersistentStorage = {
-    store: function (dataToStore) {
-      var storedData = this.get();
-      var lastItem = storedData[storedData.length - 1];
-
-      if (lastItem && lastItem.uuid === dataToStore.uuid) {
-        // this session is already stored, get rid of the old data.
-        storedData.pop();
-      }
-
-      storedData.push(dataToStore);
-      localStorage.setItem(LOCAL_STORAGE_NAMESPACE, JSON.stringify(storedData));
-    },
-
-    get: function () {
-      var stringified = localStorage.getItem(LOCAL_STORAGE_NAMESPACE) || '[]';
-      var data = JSON.parse(stringified);
-      return data;
-    },
-
-    clear: function () {
-      localStorage.removeItem(LOCAL_STORAGE_NAMESPACE);
     }
   };
 
@@ -180,8 +211,11 @@
     });
   }
 
-  exports.SpeedTrap = create(SpeedTrap);
-  exports.SpeedTrap.init();
-
-}(this));
-
+  module.exports = create(SpeedTrap);
+});
+/* jshint ignore:start */
+})((function(n,w){return typeof define=='function'&&define.amd
+?define:typeof module=='object'?function(c){c(require,exports,module);}
+:function(c){var m={exports:{}},r=function(n){return w[n];};w[n]=c(r,m.exports,m)||m.exports;};
+})('SpeedTrap',this));
+/* jshint ignore:end */
