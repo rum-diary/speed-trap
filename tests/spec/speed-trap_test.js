@@ -13,19 +13,28 @@
     beforeEach(function () {
       speedTrap = Object.create(SpeedTrap);
       speedTrap.init({});
-      speedTrap.stored.clear();
     });
 
     it('exists', function () {
       assert.isObject(window.SpeedTrap);
     });
 
-    it('all data can be retreived', function () {
-      var data = speedTrap.get();
-      assert.isObject(data.navigationTiming);
-      assert.isObject(data.timers);
-      assert.isArray(data.events);
-      assert.isTrue('referrer' in data);
+    describe('getLoad', function () {
+      it('gets data available on window.onload', function () {
+        var data = speedTrap.getLoad();
+        assert.isObject(data.navigationTiming);
+        assert.isTrue('referrer' in data);
+      });
+    });
+
+    describe('getUnload', function () {
+      it('gets data available after app has been running', function () {
+        var data = speedTrap.getUnload();
+
+        assert.isObject(data.timers);
+        assert.isArray(data.events);
+        assert.isNumber(data.duration);
+      });
     });
 
     describe('navigationTiming', function () {
@@ -53,28 +62,7 @@
         var events = speedTrap.events.get();
         assert.isArray(events);
         assert.equal(events[0].type, 'event');
-        assert.ok(events[0].timestamp);
-      });
-    });
-
-    describe('stored', function () {
-      it('current session can be stored', function () {
-        speedTrap.store();
-        var sessions = speedTrap.stored.get();
-        assert.isArray(sessions);
-
-        var session = sessions[0];
-        assert.ok('navigationTiming' in session);
-        assert.isObject(session.timers);
-        assert.isArray(session.events);
-
-      });
-
-      it('a session is only stored once', function () {
-        speedTrap.store();
-        speedTrap.store();
-        var sessions = speedTrap.stored.get();
-        assert.equal(sessions.length, 1);
+        assert.isNumber(events[0].offset);
       });
     });
   });

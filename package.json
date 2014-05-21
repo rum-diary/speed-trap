@@ -1,6 +1,6 @@
 {
   "name": "speed-trap",
-  "version": "0.0.0",
+  "version": "0.0.1",
   "description": "Capture RUM - timers, events, navigation timing, resource timing.",
   "main": "Gruntfile.js",
   "directories": {
@@ -19,16 +19,15 @@
     "test": "grunt test"
   },
   "devDependencies": {
-    "grunt-contrib-jshint": "~0.8.0",
-    "jshint": "~2.3.0",
-    "grunt": "~0.4.2",
-    "grunt-contrib-uglify": "~0.2.7",
-    "jshint-stylish": "~0.1.4",
-    "grunt-mocha": "~0.4.7",
-    "time-grunt": "~0.2.5",
-    "load-grunt-tasks": "~0.2.1",
-    "grunt-contrib-clean": "~0.5.0",
-    "grunt-contrib-copy": "~0.4.1",
-    "grunt-cli": "~0.1.11"
+    "grunt": "0.4.2",
+    "grunt-contrib-clean": "0.5.0",
+    "grunt-contrib-copy": "0.5.0",
+    "grunt-contrib-jshint": "0.10.0",
+    "grunt-contrib-uglify": "0.4.0",
+    "grunt-mocha": "0.4.7",
+    "jshint": "2.5.1",
+    "jshint-stylish": "0.2.0",
+    "load-grunt-tasks": "0.4.0",
+    "time-grunt": "0.3.1"
   }
 }
