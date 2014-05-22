@@ -169,6 +169,11 @@ define(function (require, exports, module, undefined) {
     get: function (name) {
       if (! name) return this.completed;
       return this.completed[name];
+    },
+
+    clear: function () {
+      this.completed = {};
+      this.running = {};
     }
   };
 
@@ -187,6 +192,10 @@ define(function (require, exports, module, undefined) {
 
     get: function () {
       return this.events;
+    },
+
+    clear: function () {
+      this.events = [];
     }
   };
 
