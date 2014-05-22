@@ -1,6 +1,6 @@
 {
   "name": "speed-trap",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "description": "Capture RUM - timers, events, navigation timing, resource timing.",
   "main": "Gruntfile.js",
   "directories": {
