@@ -16,7 +16,7 @@
     "url": "https://github.com/shane-tomlinson/speed-trap/issues"
   },
   "scripts": {
-    "test": "grunt test"
+    "test": "grunt jshint && grunt test"
   },
   "devDependencies": {
     "grunt": "0.4.2",
