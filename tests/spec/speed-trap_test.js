@@ -54,6 +54,16 @@
           done();
         }, 1);
       });
+
+      it('can be cleared', function () {
+        speedTrap.timers.start('named_timer');
+        speedTrap.timers.stop('named_timer');
+
+        speedTrap.timers.clear();
+
+        var timers = speedTrap.timers.get('named_timer');
+        assert.isUndefined(timers);
+      });
     });
 
     describe('events', function () {
@@ -63,6 +73,15 @@
         assert.isArray(events);
         assert.equal(events[0].type, 'event');
         assert.isNumber(events[0].offset);
+      });
+
+      it('can be cleared', function () {
+        speedTrap.events.capture('event');
+
+        speedTrap.events.clear();
+
+        var events = speedTrap.events.get('event');
+        assert.equal(events.length, 0);
       });
     });
   });
