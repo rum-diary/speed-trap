@@ -1,5 +1,7 @@
 # Speed Trap
 
+[![Build Status](https://api.shippable.com/projects/537c9a0f2f80b3d10123db12/badge/master)](https://www.shippable.com/projects/537c9a0f2f80b3d10123db12)
+
 Capture RUM - timers, events, navigation timing, resource timing.
 
 ## Author:
