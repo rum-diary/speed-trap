@@ -34,8 +34,12 @@ define(function (require, exports, module, undefined) {
       // rum-diary.org. This bit keeps track whether the user has visited
       // this site before. Since localStorage is scoped to a particular
       // domain, it is not shared with other sites.
-      this.returning = !!localStorage.getItem('_st');
-      localStorage.setItem('_st', '1');
+      try {
+        this.returning = !!localStorage.getItem('_st');
+        localStorage.setItem('_st', '1');
+      } catch(e) {
+        // if cookies are disabled, localStorage access will blow up.
+      }
     },
 
     /**
@@ -45,8 +49,13 @@ define(function (require, exports, module, undefined) {
       // puuid is saved for users who visit another page on the same
       // site. The current page will be updated to set its is_exit flag
       // to false as well as update which page the user goes to next.
-      var previousPageUUID = sessionStorage.getItem('_puuid');
-      sessionStorage.removeItem('_puuid');
+      var previousPageUUID;
+      try {
+        previousPageUUID = sessionStorage.getItem('_puuid');
+        sessionStorage.removeItem('_puuid');
+      } catch(e) {
+        // if cookies are disabled, sessionStorage access will blow up.
+      }
 
       return {
         uuid: this.uuid,
@@ -65,7 +74,11 @@ define(function (require, exports, module, undefined) {
       // puuid is saved for users who visit another page on the same
       // site. The current page will be updated to set its is_exit flag
       // to false as well as update which page the user goes to next.
-      sessionStorage.setItem('_puuid', this.uuid);
+      try {
+        sessionStorage.setItem('_puuid', this.uuid);
+      } catch(e) {
+        // if cookies are disabled, sessionStorage access will blow up.
+      }
 
       return {
         uuid: this.uuid,
