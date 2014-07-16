@@ -1,6 +1,6 @@
 {
   "name": "speed-trap",
-  "version": "0.0.4",
+  "version": "0.0.5",
   "homepage": "https://github.com/shane-tomlinson/speed-trap",
   "authors": [
     "Shane Tomlinson <shane@shanetomlinson.com>"
@@ -23,7 +23,8 @@
     "page speed",
     "speed",
     "performance",
-    "measure"
+    "measure",
+    "screen size"
   ],
   "license": "MPL2.0",
   "ignore": [
