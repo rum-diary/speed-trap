@@ -24,6 +24,8 @@
         var data = speedTrap.getLoad();
         assert.isObject(data.navigationTiming);
         assert.isTrue('referrer' in data);
+        assert.equal(data.screen.width, window.screen.width);
+        assert.equal(data.screen.height, window.screen.height);
       });
     });
 

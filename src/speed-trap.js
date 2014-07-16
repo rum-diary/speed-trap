@@ -63,7 +63,11 @@ define(function (require, exports, module, undefined) {
         navigationTiming: this.navigationTiming.diff(),
         referrer: document.referrer || '',
         tags: this.tags,
-        returning: this.returning
+        returning: this.returning,
+        screen: {
+          width: window.screen.width,
+          height: window.screen.height
+        }
       };
     },
 
