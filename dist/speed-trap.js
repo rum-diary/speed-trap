@@ -2,10 +2,23 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
-/* jshint ignore:start */
-(function(define){
-/* jshint ignore:end */
-define(function (require, exports, module, undefined) {
+// Node/UMD/AMD from
+// https://github.com/umdjs/umd/blob/master/returnExports.js
+(function (root, factory) {
+  'use strict';
+  if (typeof define === 'function' && define.amd) {
+    // AMD. Register as an anonymous module.
+    define([], factory);
+  } else if (typeof exports === 'object') {
+    // Node. Does not work with strict CommonJS, but
+    // only CommonJS-like environments that support module.exports,
+    // like Node.
+    module.exports = factory();
+  } else {
+    // Browser globals (root is window)
+    root.SpeedTrap = factory();
+  }
+}(this, function () {
   'use strict';
 
   var SpeedTrap = {
@@ -237,11 +250,5 @@ define(function (require, exports, module, undefined) {
     });
   }
 
-  module.exports = create(SpeedTrap);
-});
-/* jshint ignore:start */
-})((function(n,w){return typeof define=='function'&&define.amd
-?define:typeof module=='object'?function(c){c(require,exports,module);}
-:function(c){var m={exports:{}},r=function(n){return w[n];};w[n]=c(r,m.exports,m)||m.exports;};
-})('SpeedTrap',this));
-/* jshint ignore:end */
+  return create(SpeedTrap);
+}));
