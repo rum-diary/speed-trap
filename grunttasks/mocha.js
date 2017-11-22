@@ -9,6 +9,7 @@ module.exports = function (grunt) {
     test: {
       src: ['tests/index.html'],
       options: {
+        logErrors: true,
         run: true
       }
     }
