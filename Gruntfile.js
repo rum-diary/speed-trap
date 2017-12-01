@@ -15,18 +15,15 @@ module.exports = function (grunt) {
 
   grunt.registerTask('build', [
     'jshint',
-    'mocha',
-    'clean',
-    'copy',
-    'uglify'
+    'webpack:prod'
   ]);
 
   grunt.registerTask('default', [
-    'jshint',
-    'mocha'
+    'test'
   ]);
 
   grunt.registerTask('test', [
+    'build',
     'mocha'
   ]);
 
