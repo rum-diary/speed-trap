@@ -1,3 +1,11 @@
 node_modules/
+
+# macOS cruft
 .DS_STORE
+
+# vim cruft
+*.swp
+
+# test build
+dist/speed-trap_test.js
 
