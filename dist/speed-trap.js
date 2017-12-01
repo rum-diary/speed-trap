@@ -1,247 +1,374 @@
+(function webpackUniversalModuleDefinition(root, factory) {
+	if(typeof exports === 'object' && typeof module === 'object')
+		module.exports = factory();
+	else if(typeof define === 'function' && define.amd)
+		define("SpeedTrap", [], factory);
+	else if(typeof exports === 'object')
+		exports["SpeedTrap"] = factory();
+	else
+		root["SpeedTrap"] = factory();
+})(this, function() {
+return /******/ (function(modules) { // webpackBootstrap
+/******/ 	// The module cache
+/******/ 	var installedModules = {};
+/******/
+/******/ 	// The require function
+/******/ 	function __webpack_require__(moduleId) {
+/******/
+/******/ 		// Check if module is in cache
+/******/ 		if(installedModules[moduleId]) {
+/******/ 			return installedModules[moduleId].exports;
+/******/ 		}
+/******/ 		// Create a new module (and put it into the cache)
+/******/ 		var module = installedModules[moduleId] = {
+/******/ 			i: moduleId,
+/******/ 			l: false,
+/******/ 			exports: {}
+/******/ 		};
+/******/
+/******/ 		// Execute the module function
+/******/ 		modules[moduleId].call(module.exports, module, module.exports, __webpack_require__);
+/******/
+/******/ 		// Flag the module as loaded
+/******/ 		module.l = true;
+/******/
+/******/ 		// Return the exports of the module
+/******/ 		return module.exports;
+/******/ 	}
+/******/
+/******/
+/******/ 	// expose the modules object (__webpack_modules__)
+/******/ 	__webpack_require__.m = modules;
+/******/
+/******/ 	// expose the module cache
+/******/ 	__webpack_require__.c = installedModules;
+/******/
+/******/ 	// define getter function for harmony exports
+/******/ 	__webpack_require__.d = function(exports, name, getter) {
+/******/ 		if(!__webpack_require__.o(exports, name)) {
+/******/ 			Object.defineProperty(exports, name, {
+/******/ 				configurable: false,
+/******/ 				enumerable: true,
+/******/ 				get: getter
+/******/ 			});
+/******/ 		}
+/******/ 	};
+/******/
+/******/ 	// getDefaultExport function for compatibility with non-harmony modules
+/******/ 	__webpack_require__.n = function(module) {
+/******/ 		var getter = module && module.__esModule ?
+/******/ 			function getDefault() { return module['default']; } :
+/******/ 			function getModuleExports() { return module; };
+/******/ 		__webpack_require__.d(getter, 'a', getter);
+/******/ 		return getter;
+/******/ 	};
+/******/
+/******/ 	// Object.prototype.hasOwnProperty.call
+/******/ 	__webpack_require__.o = function(object, property) { return Object.prototype.hasOwnProperty.call(object, property); };
+/******/
+/******/ 	// __webpack_public_path__
+/******/ 	__webpack_require__.p = "";
+/******/
+/******/ 	// Load entry module and return exports
+/******/ 	return __webpack_require__(__webpack_require__.s = 4);
+/******/ })
+/************************************************************************/
+/******/ ([
+/* 0 */,
+/* 1 */,
+/* 2 */,
+/* 3 */,
+/* 4 */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__guid__ = __webpack_require__(5);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__navigation_timing__ = __webpack_require__(6);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__timers__ = __webpack_require__(7);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_3__events__ = __webpack_require__(8);
+/* This Source Code Form is subject to the terms of the Mozilla Public
+* License, v. 2.0. If a copy of the MPL was not distributed with this
+* file, You can obtain one at http://mozilla.org/MPL/2.0/. */
+
+
+
+
+
+
+
+var SpeedTrap = {
+  init: function (options) {
+    options = options || {};
+    this.navigationTiming = Object.create(__WEBPACK_IMPORTED_MODULE_1__navigation_timing__["a" /* default */]);
+    this.navigationTiming.init(options);
+
+    this.baseTime = this.navigationTiming.get().navigationStart || Date.now();
+
+    this.timers = Object.create(__WEBPACK_IMPORTED_MODULE_2__timers__["a" /* default */]);
+    this.timers.init({
+      baseTime: this.baseTime
+    });
+
+    this.events = Object.create(__WEBPACK_IMPORTED_MODULE_3__events__["a" /* default */]);
+    this.events.init({
+      baseTime: this.baseTime
+    });
+
+    this.uuid = Object(__WEBPACK_IMPORTED_MODULE_0__guid__["a" /* default */])();
+
+    this.tags = options.tags || [];
+
+    // store a bit with the site being tracked to avoid sending cookies to
+    // rum-diary.org. This bit keeps track whether the user has visited
+    // this site before. Since localStorage is scoped to a particular
+    // domain, it is not shared with other sites.
+    try {
+      this.returning = !!localStorage.getItem('_st');
+      localStorage.setItem('_st', '1');
+    } catch(e) {
+      // if cookies are disabled, localStorage access will blow up.
+    }
+  },
+
+  /**
+    * Data to send on page load.
+    */
+  getLoad: function () {
+    // puuid is saved for users who visit another page on the same
+    // site. The current page will be updated to set its is_exit flag
+    // to false as well as update which page the user goes to next.
+    var previousPageUUID;
+    try {
+      previousPageUUID = sessionStorage.getItem('_puuid');
+      sessionStorage.removeItem('_puuid');
+    } catch(e) {
+      // if cookies are disabled, sessionStorage access will blow up.
+    }
+
+    return {
+      uuid: this.uuid,
+      puuid: previousPageUUID,
+      navigationTiming: this.navigationTiming.diff(),
+      referrer: document.referrer || '',
+      tags: this.tags,
+      returning: this.returning,
+      screen: {
+        width: window.screen.width,
+        height: window.screen.height
+      }
+    };
+  },
+
+  /**
+    * Data to send on page unload
+    */
+  getUnload: function () {
+    // puuid is saved for users who visit another page on the same
+    // site. The current page will be updated to set its is_exit flag
+    // to false as well as update which page the user goes to next.
+    try {
+      sessionStorage.setItem('_puuid', this.uuid);
+    } catch(e) {
+      // if cookies are disabled, sessionStorage access will blow up.
+    }
+
+    return {
+      uuid: this.uuid,
+      duration: Date.now() - this.baseTime,
+      timers: this.timers.get(),
+      events: this.events.get()
+    };
+  }
+};
+
+
+/* harmony default export */ __webpack_exports__["default"] = (Object.create(SpeedTrap));
+
+
+/***/ }),
+/* 5 */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+/* harmony export (immutable) */ __webpack_exports__["a"] = guid;
 /* This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
-/* jshint ignore:start */
-(function(define){
-/* jshint ignore:end */
-define(function (require, exports, module, undefined) {
-  'use strict';
 
-  var SpeedTrap = {
-    init: function (options) {
-      options = options || {};
-      this.navigationTiming = create(NavigationTiming);
-      this.navigationTiming.init(options);
 
-      this.baseTime = this.navigationTiming.get().navigationStart || now();
+function guid() {
+  // from http://stackoverflow.com/questions/105034/how-to-create-a-guid-uuid-in-javascript
+  return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function (c) {
+    /*jshint bitwise: false*/
+    var r = Math.random() * 16|0, v = c === 'x' ? r : (r&0x3|0x8);
+    return v.toString(16);
+  });
+}
 
-      this.timers = create(Timers);
-      this.timers.init({
-        baseTime: this.baseTime
-      });
 
-      this.events = create(Events);
-      this.events.init({
-        baseTime: this.baseTime
-      });
+/***/ }),
+/* 6 */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
 
-      this.uuid = guid();
+"use strict";
+/* This Source Code Form is subject to the terms of the Mozilla Public
+ * License, v. 2.0. If a copy of the MPL was not distributed with this
+ * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
-      this.tags = options.tags || [];
 
-      // store a bit with the site being tracked to avoid sending cookies to
-      // rum-diary.org. This bit keeps track whether the user has visited
-      // this site before. Since localStorage is scoped to a particular
-      // domain, it is not shared with other sites.
-      try {
-        this.returning = !!localStorage.getItem('_st');
-        localStorage.setItem('_st', '1');
-      } catch(e) {
-        // if cookies are disabled, localStorage access will blow up.
-      }
-    },
 
-    /**
-     * Data to send on page load.
-     */
-    getLoad: function () {
-      // puuid is saved for users who visit another page on the same
-      // site. The current page will be updated to set its is_exit flag
-      // to false as well as update which page the user goes to next.
-      var previousPageUUID;
-      try {
-        previousPageUUID = sessionStorage.getItem('_puuid');
-        sessionStorage.removeItem('_puuid');
-      } catch(e) {
-        // if cookies are disabled, sessionStorage access will blow up.
-      }
+var NAVIGATION_TIMING_FIELDS = {
+  'navigationStart': undefined,
+  'unloadEventStart': undefined,
+  'unloadEventEnd': undefined,
+  'redirectStart': undefined,
+  'redirectEnd': undefined,
+  'fetchStart': undefined,
+  'domainLookupStart': undefined,
+  'domainLookupEnd': undefined,
+  'connectStart': undefined,
+  'connectEnd': undefined,
+  'secureConnectionStart': undefined,
+  'requestStart': undefined,
+  'responseStart': undefined,
+  'responseEnd': undefined,
+  'domLoading': undefined,
+  'domInteractive': undefined,
+  'domContentLoadedEventStart': undefined,
+  'domContentLoadedEventEnd': undefined,
+  'domComplete': undefined,
+  'loadEventStart': undefined,
+  'loadEventEnd': undefined
+};
 
-      return {
-        uuid: this.uuid,
-        puuid: previousPageUUID,
-        navigationTiming: this.navigationTiming.diff(),
-        referrer: document.referrer || '',
-        tags: this.tags,
-        returning: this.returning,
-        screen: {
-          width: window.screen.width,
-          height: window.screen.height
-        }
-      };
-    },
+var navigationTiming;
+try {
+  navigationTiming = window.performance.timing;
+} catch (e) {
+  navigationTiming = Object.create(NAVIGATION_TIMING_FIELDS);
+}
 
-    /**
-     * Data to send on page unload
-     */
-    getUnload: function () {
-      // puuid is saved for users who visit another page on the same
-      // site. The current page will be updated to set its is_exit flag
-      // to false as well as update which page the user goes to next.
-      try {
-        sessionStorage.setItem('_puuid', this.uuid);
-      } catch(e) {
-        // if cookies are disabled, sessionStorage access will blow up.
-      }
+var NavigationTiming = {
+  init: function (options) {
+    options = options || {};
+    this.navigationTiming = options.navigationTiming || navigationTiming;
 
-      return {
-        uuid: this.uuid,
-        duration: now() - this.baseTime,
-        timers: this.timers.get(),
-        events: this.events.get()
-      };
+    // if navigationStart is not available (no browser support), use now
+    // as the basetime.
+    this.baseTime = this.navigationTiming.navigationStart || Date.now();
+  },
+
+  get: function () {
+    return this.navigationTiming;
+  },
+
+  diff: function() {
+    var diff = {};
+    var baseTime = this.baseTime;
+    for (var key in NAVIGATION_TIMING_FIELDS) {
+      if ( ! this.navigationTiming[key])
+        diff[key] = null;
+      else
+        diff[key] = this.navigationTiming[key] - baseTime;
     }
-  };
-
-  var NAVIGATION_TIMING_FIELDS = {
-    'navigationStart': undefined,
-    'unloadEventStart': undefined,
-    'unloadEventEnd': undefined,
-    'redirectStart': undefined,
-    'redirectEnd': undefined,
-    'fetchStart': undefined,
-    'domainLookupStart': undefined,
-    'domainLookupEnd': undefined,
-    'connectStart': undefined,
-    'connectEnd': undefined,
-    'secureConnectionStart': undefined,
-    'requestStart': undefined,
-    'responseStart': undefined,
-    'responseEnd': undefined,
-    'domLoading': undefined,
-    'domInteractive': undefined,
-    'domContentLoadedEventStart': undefined,
-    'domContentLoadedEventEnd': undefined,
-    'domComplete': undefined,
-    'loadEventStart': undefined,
-    'loadEventEnd': undefined
-  };
-
-  var navigationTiming;
-  try {
-    navigationTiming = window.performance.timing;
-  } catch (e) {
-    navigationTiming = create(NAVIGATION_TIMING_FIELDS);
+    return diff;
   }
+};
 
-  var NavigationTiming = {
-    init: function (options) {
-      options = options || {};
-      this.navigationTiming = options.navigationTiming || navigationTiming;
+/* harmony default export */ __webpack_exports__["a"] = (NavigationTiming);
 
-      // if navigationStart is not available (no browser support), use now
-      // as the basetime.
-      this.baseTime = this.navigationTiming.navigationStart || now();
-    },
+/***/ }),
+/* 7 */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
 
-    get: function () {
-      return this.navigationTiming;
-    },
+"use strict";
+/* This Source Code Form is subject to the terms of the Mozilla Public
+ * License, v. 2.0. If a copy of the MPL was not distributed with this
+ * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
-    diff: function() {
-      var diff = {};
-      var baseTime = this.baseTime;
-      for (var key in NAVIGATION_TIMING_FIELDS) {
-        if ( ! this.navigationTiming[key])
-          diff[key] = null;
-        else
-          diff[key] = this.navigationTiming[key] - baseTime;
-      }
-      return diff;
-    }
-  };
 
-  var Timers = {
-    init: function (options) {
-      this.completed = {};
-      this.running = {};
-      this.baseTime = options.baseTime;
-    },
 
-    start: function (name) {
-      var start = now();
-      if (this.running[name]) throw new Error(name + ' timer already started');
+/* harmony default export */ __webpack_exports__["a"] = ({
+  init: function (options) {
+    this.completed = {};
+    this.running = {};
+    this.baseTime = options.baseTime;
+  },
 
-      this.running[name] = start;
-    },
+  start: function (name) {
+    var start = Date.now();
+    if (this.running[name]) throw new Error(name + ' timer already started');
 
-    stop: function (name) {
-      var stop = now();
+    this.running[name] = start;
+  },
 
-      if (! this.running[name]) throw new Error(name + ' timer not started');
+  stop: function (name) {
+    var stop = Date.now();
 
-      if (! this.completed[name]) this.completed[name] = [];
-      var start = this.running[name];
+    if (! this.running[name]) throw new Error(name + ' timer not started');
 
-      this.completed[name].push({
-        start: start - this.baseTime,
-        stop: stop - this.baseTime,
-        elapsed: stop - start
-      });
+    if (! this.completed[name]) this.completed[name] = [];
+    var start = this.running[name];
 
-      this.running[name] = null;
-      delete this.running[name];
-    },
-
-    get: function (name) {
-      if (! name) return this.completed;
-      return this.completed[name];
-    },
-
-    clear: function () {
-      this.completed = {};
-      this.running = {};
-    }
-  };
-
-  var Events = {
-    init: function (options) {
-      this.events = [];
-      this.baseTime = options.baseTime;
-    },
-
-    capture: function (name) {
-      this.events.push({
-        type: name,
-        offset: now() - this.baseTime
-      });
-    },
-
-    get: function () {
-      return this.events;
-    },
-
-    clear: function () {
-      this.events = [];
-    }
-  };
-
-  function create(proto) {
-    if (Object.create) return Object.create(proto);
-
-    var F = function () {};
-    F.prototype = proto;
-    return new F();
-  }
-
-  function now() {
-    return new Date().getTime();
-  }
-
-  function guid() {
-    // from http://stackoverflow.com/questions/105034/how-to-create-a-guid-uuid-in-javascript
-    return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function (c) {
-      /*jshint bitwise: false*/
-      var r = Math.random() * 16|0, v = c === 'x' ? r : (r&0x3|0x8);
-      return v.toString(16);
+    this.completed[name].push({
+      start: start - this.baseTime,
+      stop: stop - this.baseTime,
+      elapsed: stop - start
     });
-  }
 
-  module.exports = create(SpeedTrap);
+    this.running[name] = null;
+    delete this.running[name];
+  },
+
+  get: function (name) {
+    if (! name) return this.completed;
+    return this.completed[name];
+  },
+
+  clear: function () {
+    this.completed = {};
+    this.running = {};
+  }
 });
-/* jshint ignore:start */
-})((function(n,w){return typeof define=='function'&&define.amd
-?define:typeof module=='object'?function(c){c(require,exports,module);}
-:function(c){var m={exports:{}},r=function(n){return w[n];};w[n]=c(r,m.exports,m)||m.exports;};
-})('SpeedTrap',this));
-/* jshint ignore:end */
+
+
+
+/***/ }),
+/* 8 */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+/* This Source Code Form is subject to the terms of the Mozilla Public
+ * License, v. 2.0. If a copy of the MPL was not distributed with this
+ * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
+
+
+
+/* harmony default export */ __webpack_exports__["a"] = ({
+  init: function (options) {
+    this.events = [];
+    this.baseTime = options.baseTime;
+  },
+
+  capture: function (name) {
+    this.events.push({
+      type: name,
+      offset: Date.now() - this.baseTime
+    });
+  },
+
+  get: function () {
+    return this.events;
+  },
+
+  clear: function () {
+    this.events = [];
+  }
+});
+
+
+/***/ })
+/******/ ]);
+});

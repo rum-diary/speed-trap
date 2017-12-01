@@ -1,11 +1,11 @@
 /* This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
-(function () {
-  /*global SpeedTrap, chai, describe, beforeEach, it*/
+  /*global describe, beforeEach, it*/
   'use strict';
 
-  var assert = chai.assert;
+  import { assert } from 'chai';
+  import SpeedTrap from '../../src/speed-trap';
 
   describe('Speed Trap', function () {
     var speedTrap;
@@ -87,6 +87,4 @@
       });
     });
   });
-
-}());
 
