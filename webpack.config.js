@@ -2,11 +2,11 @@ const UglifyJsPlugin = require('uglifyjs-webpack-plugin');
 const path = require('path');
 
 module.exports = {
-  context: path.resolve(__dirname, 'src'),
+  context: path.resolve(__dirname),
 	entry: {
-    'speed-trap': './speed-trap',
-    'speed-trap.min': './speed-trap',
-    'speed-trap_test': '../tests/spec/speed-trap_test'
+    'speed-trap': './index',
+    'speed-trap.min': './index',
+    'speed-trap_test': './tests/spec/speed-trap_test'
   },
   output: {
     filename: '[name].js',
