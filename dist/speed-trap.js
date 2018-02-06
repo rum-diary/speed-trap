@@ -249,14 +249,15 @@ try {
   navigationTiming = Object.create(NAVIGATION_TIMING_FIELDS);
 }
 
+if (! navigationTiming.navigationStart) {
+  navigationTiming.navigationStart = Date.now();
+}
+
 var NavigationTiming = {
   init: function (options) {
     options = options || {};
     this.navigationTiming = options.navigationTiming || navigationTiming;
-
-    // if navigationStart is not available (no browser support), use now
-    // as the basetime.
-    this.baseTime = this.navigationTiming.navigationStart || Date.now();
+    this.baseTime = this.navigationTiming.navigationStart;
   },
 
   get: function () {
@@ -267,16 +268,19 @@ var NavigationTiming = {
     var diff = {};
     var baseTime = this.baseTime;
     for (var key in NAVIGATION_TIMING_FIELDS) {
-      if ( ! this.navigationTiming[key])
+      var timing = this.navigationTiming[key];
+      if (timing >= baseTime) {
+        diff[key] = timing - baseTime;
+      } else {
         diff[key] = null;
-      else
-        diff[key] = this.navigationTiming[key] - baseTime;
+      }
     }
     return diff;
   }
 };
 
 /* harmony default export */ __webpack_exports__["a"] = (NavigationTiming);
+
 
 /***/ }),
 /* 7 */
