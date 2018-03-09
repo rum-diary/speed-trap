@@ -249,15 +249,13 @@ try {
   navigationTiming = Object.create(NAVIGATION_TIMING_FIELDS);
 }
 
-if (! navigationTiming.navigationStart) {
-  navigationTiming.navigationStart = Date.now();
-}
+var navigationStart = navigationTiming.navigationStart || Date.now();
 
 var NavigationTiming = {
   init: function (options) {
     options = options || {};
     this.navigationTiming = options.navigationTiming || navigationTiming;
-    this.baseTime = this.navigationTiming.navigationStart;
+    this.baseTime = navigationStart;
   },
 
   get: function () {
