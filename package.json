@@ -1,6 +1,6 @@
 {
   "name": "speed-trap",
-  "version": "0.0.7",
+  "version": "0.0.8",
   "description": "Capture RUM - timers, events, navigation timing, resource timing.",
   "main": "index.js",
   "directories": {
