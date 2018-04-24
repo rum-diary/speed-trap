@@ -69,12 +69,27 @@
     });
 
     describe('events', function () {
-      it('can be captured', function () {
+      it('can be captured without data', () => {
         speedTrap.events.capture('event');
-        var events = speedTrap.events.get();
+        const events = speedTrap.events.get();
+        assert.isArray(events);
+        assert.lengthOf(Object.keys(events[0]), 2);
+        assert.equal(events[0].type, 'event');
+        assert.isNumber(events[0].offset);
+      });
+
+      it('can be captured with data', () => {
+        const data = {
+          key: 'value',
+          offset: 'ignored',
+          type: 'ignored',
+        };
+        speedTrap.events.capture('event', data);
+        const events = speedTrap.events.get();
         assert.isArray(events);
         assert.equal(events[0].type, 'event');
         assert.isNumber(events[0].offset);
+        assert.strictEqual(events[0].key, 'value');
       });
 
       it('can be cleared', function () {
