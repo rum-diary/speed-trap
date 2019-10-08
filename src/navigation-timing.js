@@ -32,6 +32,10 @@ var navigationTiming;
 try {
   navigationTiming = window.performance.timing;
 } catch (e) {
+  // NOOP
+}
+
+if (!navigationTiming) {
   navigationTiming = Object.create(NAVIGATION_TIMING_FIELDS);
 }
 
