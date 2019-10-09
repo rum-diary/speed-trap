@@ -2,29 +2,33 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
-'use strict';
+"use strict";
 
-export default {
-  init: function (options) {
+export default class Timers {
+  completed: any;
+  running: any;
+  baseTime: number;
+
+  constructor(options: { baseTime: number }) {
     this.completed = {};
     this.running = {};
     this.baseTime = options.baseTime;
-  },
+  }
 
-  start: function (name) {
-    var start = Date.now();
-    if (this.running[name]) throw new Error(name + ' timer already started');
+  start(name: string) {
+    const start = Date.now();
+    if (this.running[name]) throw new Error(name + " timer already started");
 
     this.running[name] = start;
-  },
+  }
 
-  stop: function (name) {
-    var stop = Date.now();
+  stop(name: string) {
+    const stop = Date.now();
 
-    if (! this.running[name]) throw new Error(name + ' timer not started');
+    if (!this.running[name]) throw new Error(name + " timer not started");
 
-    if (! this.completed[name]) this.completed[name] = [];
-    var start = this.running[name];
+    if (!this.completed[name]) this.completed[name] = [];
+    const start = this.running[name];
 
     this.completed[name].push({
       start: start - this.baseTime,
@@ -34,16 +38,15 @@ export default {
 
     this.running[name] = null;
     delete this.running[name];
-  },
+  }
 
-  get: function (name) {
-    if (! name) return this.completed;
+  get(name?: string) {
+    if (!name) return this.completed;
     return this.completed[name];
-  },
+  }
 
-  clear: function () {
+  clear() {
     this.completed = {};
     this.running = {};
   }
-};
-
+}

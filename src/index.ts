@@ -8,21 +8,25 @@ import NavigationTiming from './navigation-timing';
 import Timers from './timers';
 import Events from './events';
 
-var SpeedTrap = {
-  init: function (options) {
-    options = options || {};
-    this.navigationTiming = Object.create(NavigationTiming);
-    this.navigationTiming.init(options);
+export default class SpeedTrap {
+  navigationTiming: NavigationTiming;
+  baseTime: number;
+  timers: Timers;
+  events: Events;
+  uuid: string;
+  tags: string[];
+  returning: boolean;
+
+  constructor (options: { tags?: string[], navigationTiming?: PerformanceTiming } = {}) {
+    this.navigationTiming = new NavigationTiming(options);
 
     this.baseTime = this.navigationTiming.get().navigationStart || Date.now();
 
-    this.timers = Object.create(Timers);
-    this.timers.init({
+    this.timers = new Timers({
       baseTime: this.baseTime
     });
 
-    this.events = Object.create(Events);
-    this.events.init({
+    this.events = new Events({
       baseTime: this.baseTime
     });
 
@@ -34,22 +38,21 @@ var SpeedTrap = {
     // rum-diary.org. This bit keeps track whether the user has visited
     // this site before. Since localStorage is scoped to a particular
     // domain, it is not shared with other sites.
+    this.returning = false;
     try {
       this.returning = !!localStorage.getItem('_st');
       localStorage.setItem('_st', '1');
     } catch(e) {
       // if cookies are disabled, localStorage access will blow up.
     }
-  },
+  }
 
   /**
     * Data to send on page load.
     */
-  getLoad: function () {
-    // puuid is saved for users who visit another page on the same
-    // site. The current page will be updated to set its is_exit flag
-    // to false as well as update which page the user goes to next.
-    var previousPageUUID;
+  getLoad () {
+    // puuid is saved for users who visit another page on the same site.
+    let previousPageUUID;
     try {
       previousPageUUID = sessionStorage.getItem('_puuid');
       sessionStorage.removeItem('_puuid');
@@ -57,27 +60,42 @@ var SpeedTrap = {
       // if cookies are disabled, sessionStorage access will blow up.
     }
 
+    let referrer = '';
+    try {
+      referrer = document.referrer;
+    } catch (e) {
+      // no-op, this can happen when run in a non-browser environment
+    }
+
+    let screen = {
+      width: 0,
+      height: 0,
+    };
+    try {
+      screen = {
+        width: window.screen.width,
+        height: window.screen.height,
+      }
+    } catch (e) {
+      // no-op, this can happen when run in a non-browser environment
+    }
+
     return {
       uuid: this.uuid,
       puuid: previousPageUUID,
       navigationTiming: this.navigationTiming.diff(),
-      referrer: document.referrer || '',
+      referrer,
       tags: this.tags,
       returning: this.returning,
-      screen: {
-        width: window.screen.width,
-        height: window.screen.height
-      }
+      screen,
     };
-  },
+  }
 
   /**
     * Data to send on page unload
     */
-  getUnload: function () {
-    // puuid is saved for users who visit another page on the same
-    // site. The current page will be updated to set its is_exit flag
-    // to false as well as update which page the user goes to next.
+  getUnload () {
+    // puuid is saved for users who visit another page on the same site.
     try {
       sessionStorage.setItem('_puuid', this.uuid);
     } catch(e) {
@@ -92,6 +110,3 @@ var SpeedTrap = {
     };
   }
 };
-
-
-export default Object.create(SpeedTrap);

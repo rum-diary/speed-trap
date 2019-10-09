@@ -4,24 +4,32 @@
 
 'use strict';
 
-export default {
-  init: function (options) {
+interface STEvent {
+  type: string,
+  offset: number;
+}
+
+export default class Events {
+  events: STEvent[];
+  baseTime: number;
+
+  constructor(options: { baseTime: number }) {
     this.events = [];
     this.baseTime = options.baseTime;
-  },
+  }
 
-  capture: function (name) {
+  capture(name: string) {
     this.events.push({
       type: name,
       offset: Date.now() - this.baseTime
     });
-  },
+  }
 
-  get: function () {
+  get(): STEvent[] {
     return this.events;
-  },
+  }
 
-  clear: function () {
+  clear() {
     this.events = [];
   }
 };
