@@ -4,17 +4,30 @@
 
 'use strict';
 
+// Not using Object.assign because old Android
+// does not support it without Webpack's polyfill
+// which is too big to include.
+const assign = (target, ...sources) => {
+  sources.forEach(source => {
+    Object.keys(source).forEach(key => {
+      target[key] = source[key];
+    });
+  });
+
+  return target;
+};
+
 export default {
   init: function (options) {
     this.events = [];
     this.baseTime = options.baseTime;
   },
 
-  capture: function (name) {
-    this.events.push({
+  capture: function (name, data = {}) {
+    this.events.push(assign({}, data, {
       type: name,
       offset: Date.now() - this.baseTime
-    });
+    }));
   },
 
   get: function () {
